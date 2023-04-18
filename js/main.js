@@ -43,7 +43,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 	// Timer
-	const deadline = '2023-04-25';
+	const deadline = '2023-04-19';
 
 	function getTimeRemainder(endtime) {
 		let days = 0,
@@ -118,4 +118,39 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	showClock('.timer', deadline);
 	showDeadline(deadline);
+
+
+	// "Tel Me" Model window
+	const btnTellMe = document.querySelectorAll('[data-telMe]');
+	const btnCloseTell = document.querySelector('[data-TelClose]');
+	const modalWindow = document.querySelector('.modal');
+
+	btnCloseTell.addEventListener('click', closeModalWindow);
+	modalWindow.addEventListener('click', (event) => {
+		if(event.target === modalWindow) closeModalWindow();
+	});
+	btnTellMe.forEach(item => {
+		item.addEventListener('click', showModalWindow);
+	});
+	document.addEventListener('keydown', (event) => {
+		// eslint-disable-next-line no-cond-assign
+		if(event.code === 'Escape' && modalWindow.classList.contains('show')) {
+			closeModalWindow();
+		}
+	});
+
+
+	function showModalWindow() {
+		modalWindow.classList.remove('hidden');
+		modalWindow.classList.add('show');
+		document.body.style.overflow = 'hidden';
+	}
+
+	function closeModalWindow() {
+		modalWindow.classList.add('hidden');
+		modalWindow.classList.remove('show');
+		document.body.style.overflow = '';
+	}
+
+	console.log(btnTellMe);
 });
