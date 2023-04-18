@@ -46,12 +46,18 @@ window.addEventListener('DOMContentLoaded', () => {
 	const deadline = '2023-04-25';
 
 	function getTimeRemainder(endtime) {
+		let days = 0,
+			hours = 0, 
+			minutes = 0, 
+			seconds = 0;
+
 		const timeMS = Date.parse(endtime) - new Date().getTime();
-		const days = Math.floor(timeMS / (1000 * 60 *60 * 24));
-		const hours = Math.floor(timeMS / (1000 * 60 * 60) % 24);
-		const minutes = Math.floor(timeMS / (1000 * 60) % 60);
-		const seconds = Math.floor(timeMS / (1000) % 60);
-		
+		if(timeMS > 0) {
+			days = Math.floor(timeMS / (1000 * 60 *60 * 24));
+			hours = Math.floor(timeMS / (1000 * 60 * 60) % 24);
+			minutes = Math.floor(timeMS / (1000 * 60) % 60);
+			seconds = Math.floor(timeMS / (1000) % 60);
+		}
 		return {
 			'total': timeMS,
 			'days': days,
@@ -79,7 +85,10 @@ window.addEventListener('DOMContentLoaded', () => {
 			minut.textContent = setZero(time['minutes']);
 			second.textContent = setZero(time['seconds']);
 
-			if( time.total <= 0 ) clearInterval(timerId);
+			if( time.total <= 0 ) {
+				clearInterval(timerId);
+				showDeadline(endtime);
+			}
 		}
 
 		function setZero(num) {
@@ -87,5 +96,26 @@ window.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
+	function showDeadline(time) {
+		const deadline = new Date(time);
+		const deadlineBlock = document.querySelector('.Timerdeadline');
+
+		if((deadline.getTime() - new Date().getTime()) <= 0) {
+			deadlineBlock.textContent = 'Простите но акция уже закончился';
+			return;
+		}
+
+		const monthIndex = ['Января', 'Февраля', 'Марта', 'Апреля', 'Мая',
+			'Июня', 'Июля', 'Августа', 'Сентября', 'Октября', 'Ноября', 'Декабря'];
+
+		const day = deadlineBlock.querySelector('.day');
+		const month = deadlineBlock.querySelector('.mouth');
+
+		day.textContent = deadline.getDate();
+		month.textContent = monthIndex[deadline.getMonth()];
+	}
+
+
 	showClock('.timer', deadline);
+	showDeadline(deadline);
 });
