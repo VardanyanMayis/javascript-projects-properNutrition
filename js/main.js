@@ -138,12 +138,25 @@ window.addEventListener('DOMContentLoaded', () => {
 			closeModalWindow();
 		}
 	});
+	
+	const modalWindowId = setTimeout(showModalWindow, 8000);
+	window.addEventListener('scroll', showModalInTheEnd);
 
+
+	function showModalInTheEnd() {
+		if(window.pageYOffset + document.documentElement.clientHeight >= 
+				document.documentElement.scrollHeight - 1) {
+			showModalWindow();
+			clearTimeout(modalWindowId);
+			removeEventListener('scroll', showModalInTheEnd);
+		}
+	}
 
 	function showModalWindow() {
 		modalWindow.classList.remove('hidden');
 		modalWindow.classList.add('show');
 		document.body.style.overflow = 'hidden';
+		clearTimeout(modalWindowId);
 	}
 
 	function closeModalWindow() {
@@ -152,5 +165,4 @@ window.addEventListener('DOMContentLoaded', () => {
 		document.body.style.overflow = '';
 	}
 
-	console.log(btnTellMe);
 });
