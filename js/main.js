@@ -43,7 +43,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 
 	// Timer
-	const deadline = '2023-04-19';
+	const deadline = '2023-05-19';
 
 	function getTimeRemainder(endtime) {
 		let days = 0,
@@ -165,4 +165,50 @@ window.addEventListener('DOMContentLoaded', () => {
 		document.body.style.overflow = '';
 	}
 
+
+	// class for card items
+	class FoodCard {
+		constructor(title, text, price, imgHreaf, alt, toDram = false) {
+			this.title = title;
+			this.text = text;
+			this.price = price;
+			this.imgHreaf = `img/tabs/${imgHreaf}`;
+			this.alt = alt;
+			this.money = 'рубли';
+			this.parentBox = document.querySelector('.menu__field .container');
+
+			if(toDram) this.changeToDram();
+		}
+
+		createElement() {
+			const newCard = document.createElement('div');
+
+			newCard.innerHTML = `<div class="menu__item"> \
+			<img src=${this.imgHreaf} alt="${this.alt}"> \
+				<h3 class="menu__item-subtitle">Меню "${this.title}"</h3> \
+				<div class="menu__item-descr">${this.text}</div>\
+				<div class="menu__item-divider"></div>\
+				<div class="menu__item-price">\
+					<div class="menu__item-cost">Цена:</div>\
+					<div class="menu__item-total"><span>${this.price} </span>${this.money}/день</div>\
+				</div>\
+			</div>`;
+
+			this.parentBox.append(newCard);
+		}
+
+		changeToDram() {
+			this.price = this.price * 5;
+			this.money = 'драм';
+		}
+	}
+
+
+	let card1Text = 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!';
+	let card2Text = 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!';
+	let card3Text = 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков. ';
+
+	new FoodCard('Фитнес', card1Text, 229, 'vegy.jpg', 'vegy').createElement();
+	new FoodCard('Премиум', card2Text, 550, 'elite.jpg', 'elite', true).createElement();
+	new FoodCard('Постное', card3Text, 430, 'post.jpg', 'post').createElement();
 });
