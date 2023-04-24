@@ -18,3 +18,14 @@
         opacity: 1;
     }
 }
+
+.big {
+    width: 380px;   
+}
+
+.recuest_message {
+    text-align: center;
+    font-weight: 600;
+    font-size: 26px;
+    color: rgb(233, 198, 0);
+}

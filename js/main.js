@@ -168,12 +168,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	// class for card items
 	class FoodCard {
-		constructor(title, text, price, imgHreaf, alt, toDram = false) {
+		constructor(title, text, price, imgHreaf, alt, toDram = false, ...classes) {
 			this.title = title;
 			this.text = text;
 			this.price = price;
 			this.imgHreaf = `img/tabs/${imgHreaf}`;
 			this.alt = alt;
+			this.classes = (classes.length > 0) ? classes : ['menu__item'];
 			this.money = 'рубли';
 			this.parentBox = document.querySelector('.menu__field .container');
 
@@ -182,17 +183,16 @@ window.addEventListener('DOMContentLoaded', () => {
 
 		createElement() {
 			const newCard = document.createElement('div');
+			this.classes.forEach(className => newCard.classList.add(className));
 
-			newCard.innerHTML = `<div class="menu__item"> \
-			<img src=${this.imgHreaf} alt="${this.alt}"> \
+			newCard.innerHTML = `<img src=${this.imgHreaf} alt="${this.alt}"> \
 				<h3 class="menu__item-subtitle">Меню "${this.title}"</h3> \
 				<div class="menu__item-descr">${this.text}</div>\
 				<div class="menu__item-divider"></div>\
 				<div class="menu__item-price">\
 					<div class="menu__item-cost">Цена:</div>\
 					<div class="menu__item-total"><span>${this.price} </span>${this.money}/день</div>\
-				</div>\
-			</div>`;
+				</div>`;
 
 			this.parentBox.append(newCard);
 		}
@@ -208,7 +208,70 @@ window.addEventListener('DOMContentLoaded', () => {
 	let card2Text = 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!';
 	let card3Text = 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков. ';
 
-	new FoodCard('Фитнес', card1Text, 229, 'vegy.jpg', 'vegy').createElement();
-	new FoodCard('Премиум', card2Text, 550, 'elite.jpg', 'elite', true).createElement();
-	new FoodCard('Постное', card3Text, 430, 'post.jpg', 'post').createElement();
+	new FoodCard('Фитнес', card1Text, 229, 'vegy.jpg',
+		'vegy', true, 'menu__item').createElement();
+
+	new FoodCard('Премиум', card2Text, 550, 'elite.jpg',
+		'elite', true, 'menu__item').createElement();
+
+	new FoodCard('Постное', card3Text, 430, 'post.jpg',
+		'post', true, 'menu__item').createElement();
+
+
+
+	// Work with "form" 'Send info about user' 
+	const forms = document.querySelectorAll('form');
+	forms.forEach(form => postData(form));
+
+	const message = {
+		loading: 'Загрузка...',
+		success: 'Спасибо! Скоро мы с вами свяжемся',
+		error: 'Что-то пошло не так...',
+	};
+
+	function postData(form) {
+		form.addEventListener('submit', (event) => {
+			event.preventDefault();
+
+			// Delete timer for modal window
+			removeEventListener('scroll', showModalInTheEnd);
+			clearTimeout(modalWindowId);
+
+			// create block for show Message
+			const requestMessage = document.createElement('div');
+			requestMessage.classList.add('recuest_message');
+			requestMessage.textContent = message.loading;
+
+			form.querySelector('.modal__title')?.classList.add('hidden');
+			form.parentElement.prepend(requestMessage);
+
+			// create object for connect server
+			const request = new XMLHttpRequest();
+			request.open('POST', 'server.php');
+
+			// if we use 'new FormData()' the headers created automatic
+			// request.setRequestHeader('Content-type', 'multipart/form-data');
+
+			const postData = new FormData(form);
+			request.send(postData);
+
+			request.addEventListener('load', () => {
+				if(request.status == 200) {
+					console.log(request.response);
+					requestMessage.style.color = 'rgb(0, 173, 0)';
+					requestMessage.textContent = message.success;
+
+					form.reset();
+					setTimeout(() => {
+						requestMessage.remove();
+						form.querySelector('.modal__title')?.classList.remove('hidden');
+					}, 3000);
+				} else {
+					requestMessage.style.color = 'red';
+					requestMessage.textContent = message.error;
+				}
+			});
+		});
+	}
+
 });
