@@ -122,12 +122,13 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	// "Tel Me" Model window
 	const btnTellMe = document.querySelectorAll('[data-telMe]');
-	const btnCloseTell = document.querySelector('[data-TelClose]');
 	const modalWindow = document.querySelector('.modal');
 
-	btnCloseTell.addEventListener('click', closeModalWindow);
 	modalWindow.addEventListener('click', (event) => {
-		if(event.target === modalWindow) closeModalWindow();
+		if(event.target === modalWindow || 
+			event.target.classList.contains('modal__close')) {
+			closeModalWindow();
+		}
 	});
 	btnTellMe.forEach(item => {
 		item.addEventListener('click', showModalWindow);
@@ -139,7 +140,7 @@ window.addEventListener('DOMContentLoaded', () => {
 		}
 	});
 	
-	const modalWindowId = setTimeout(showModalWindow, 8000);
+	const modalWindowId = setTimeout(showModalWindow, 50000);
 	window.addEventListener('scroll', showModalInTheEnd);
 
 
@@ -224,7 +225,7 @@ window.addEventListener('DOMContentLoaded', () => {
 	forms.forEach(form => postData(form));
 
 	const message = {
-		loading: 'Загрузка...',
+		loading: 'img/form/spinner.svg',
 		success: 'Спасибо! Скоро мы с вами свяжемся',
 		error: 'Что-то пошло не так...',
 	};
@@ -237,12 +238,10 @@ window.addEventListener('DOMContentLoaded', () => {
 			removeEventListener('scroll', showModalInTheEnd);
 			clearTimeout(modalWindowId);
 
-			// create block for show Message
-			const requestMessage = document.createElement('div');
-			requestMessage.classList.add('recuest_message');
-			requestMessage.textContent = message.loading;
-
-			form.querySelector('.modal__title')?.classList.add('hidden');
+			// create spinner for show Message (loading)
+			const requestMessage = document.createElement('img');
+			requestMessage.src = message.loading;
+			requestMessage.classList.add('loading__spinner');
 			form.parentElement.prepend(requestMessage);
 
 			// create object for connect server
@@ -257,21 +256,44 @@ window.addEventListener('DOMContentLoaded', () => {
 
 			request.addEventListener('load', () => {
 				if(request.status == 200) {
+					requestMessage.remove();
+					showFormMessage(message.success, true);
 					console.log(request.response);
-					requestMessage.style.color = 'rgb(0, 173, 0)';
-					requestMessage.textContent = message.success;
 
 					form.reset();
-					setTimeout(() => {
-						requestMessage.remove();
-						form.querySelector('.modal__title')?.classList.remove('hidden');
-					}, 3000);
 				} else {
-					requestMessage.style.color = 'red';
-					requestMessage.textContent = message.error;
+					requestMessage.remove();
+					showFormMessage(message.error, false);
 				}
 			});
 		});
+	}
+
+	function showFormMessage(message, success) {
+		showModalWindow();
+		const contant = modalWindow.querySelector('.modal__dialog');
+		const form = contant.querySelector('.modal__content');
+		form.classList.add('hidden');
+
+		const showMessage = document.createElement('div');
+		const answer = document.createElement('h2');
+		answer.classList.add('recuest__message');
+		answer.textContent = message;
+		answer.style.color = (success) ? 'rgb(0, 170, 28)' : 'rgb(138, 0, 0)';
+
+		showMessage.innerHTML = `
+		<div class="modal__content">
+				<div data-TelClose class="modal__close">&times;</div>
+		</div>`;
+
+		contant.append(showMessage);
+		showMessage.querySelector('.modal__content').append(answer);
+
+		setTimeout(function() {
+			showMessage.remove();
+			closeModalWindow();
+			form.classList.remove('hidden');
+		}, 3000);
 	}
 
 });
