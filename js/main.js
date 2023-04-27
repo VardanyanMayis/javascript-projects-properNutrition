@@ -244,28 +244,25 @@ window.addEventListener('DOMContentLoaded', () => {
 			requestMessage.classList.add('loading__spinner');
 			form.parentElement.prepend(requestMessage);
 
-			// create object for connect server
-			const request = new XMLHttpRequest();
-			request.open('POST', 'server.php');
-
-			// if we use 'new FormData()' the headers created automatic
-			// request.setRequestHeader('Content-type', 'multipart/form-data');
 
 			const postData = new FormData(form);
-			request.send(postData);
-
-			request.addEventListener('load', () => {
-				if(request.status == 200) {
-					requestMessage.remove();
+			// use Fatch Api for connaction with server
+			fetch('server.php', {
+				method: 'POST',
+				body: postData,
+			})
+				.then(data => data.text())
+				.then(data => {
 					showFormMessage(message.success, true);
-					console.log(request.response);
-
-					form.reset();
-				} else {
-					requestMessage.remove();
+					console.log(data);
+				})
+				.catch(() => {
 					showFormMessage(message.error, false);
-				}
-			});
+				})
+				.finally(() => {
+					requestMessage.remove();
+					form.reset();
+				});
 		});
 	}
 
@@ -295,5 +292,4 @@ window.addEventListener('DOMContentLoaded', () => {
 			form.classList.remove('hidden');
 		}, 3000);
 	}
-
 });
