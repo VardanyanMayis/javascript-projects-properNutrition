@@ -173,7 +173,7 @@ window.addEventListener('DOMContentLoaded', () => {
 			this.title = title;
 			this.text = text;
 			this.price = price;
-			this.imgHreaf = `img/tabs/${imgHreaf}`;
+			this.imgHreaf = `${imgHreaf}`;
 			this.alt = alt;
 			this.classes = (classes.length > 0) ? classes : ['menu__item'];
 			this.money = 'рубли';
@@ -205,19 +205,34 @@ window.addEventListener('DOMContentLoaded', () => {
 	}
 
 
-	let card1Text = 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!';
-	let card2Text = 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!';
-	let card3Text = 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков. ';
+	// let card1Text = 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!';
+	// let card2Text = 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!';
+	// let card3Text = 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков. ';
 
-	new FoodCard('Фитнес', card1Text, 229, 'vegy.jpg',
-		'vegy', true, 'menu__item').createElement();
+	// new FoodCard('Фитнес', card1Text, 229, 'vegy.jpg',
+	// 	'vegy', true, 'menu__item').createElement();
 
-	new FoodCard('Премиум', card2Text, 550, 'elite.jpg',
-		'elite', true, 'menu__item').createElement();
+	// new FoodCard('Премиум', card2Text, 550, 'elite.jpg',
+	// 	'elite', true, 'menu__item').createElement();
 
-	new FoodCard('Постное', card3Text, 430, 'post.jpg',
-		'post', true, 'menu__item').createElement();
+	// new FoodCard('Постное', card3Text, 430, 'post.jpg',
+	// 	'post', true, 'menu__item').createElement();
 
+	fetch('db.json')
+		.then(data => data.json())
+		.then(data => {
+			for(let i = 0; i < data.menu.length; i++) {
+				let item = data.menu[i];
+				new FoodCard(
+					item.title,
+					item.descr,
+					item.price,
+					item.img,
+					item.altimg,
+					item?.toDram,
+				).createElement();
+			}
+		});
 
 
 	// Work with "form" 'Send info about user' 
