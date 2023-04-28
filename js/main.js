@@ -204,40 +204,27 @@ window.addEventListener('DOMContentLoaded', () => {
 		}
 	}
 
+	
 
-	// let card1Text = 'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!';
-	// let card2Text = 'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!';
-	// let card3Text = 'Меню “Постное” - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков. ';
+	const getData = async (url) => {
+		const res = await fetch(url);
+		if(!res.ok) throw new Error(`Could not fetch ${url}, status ${res.status}`);
+		return await res.json();
+	};
 
-	// new FoodCard('Фитнес', card1Text, 229, 'vegy.jpg',
-	// 	'vegy', true, 'menu__item').createElement();
 
-	// new FoodCard('Премиум', card2Text, 550, 'elite.jpg',
-	// 	'elite', true, 'menu__item').createElement();
-
-	// new FoodCard('Постное', card3Text, 430, 'post.jpg',
-	// 	'post', true, 'menu__item').createElement();
-
-	fetch('db.json')
-		.then(data => data.json())
+	getData('db.json')
 		.then(data => {
-			for(let i = 0; i < data.menu.length; i++) {
-				let item = data.menu[i];
-				new FoodCard(
-					item.title,
-					item.descr,
-					item.price,
-					item.img,
-					item.altimg,
-					item?.toDram,
-				).createElement();
-			}
+			data.menu.forEach( ({title, descr, price, img, altimg}) => {
+				new FoodCard(title, descr, price, img, altimg).createElement();
+			});
 		});
+
 
 
 	// Work with "form" 'Send info about user' 
 	const forms = document.querySelectorAll('form');
-	forms.forEach(form => postData(form));
+	forms.forEach(form => bindPostData(form));
 
 	const message = {
 		loading: 'img/form/spinner.svg',
@@ -245,7 +232,17 @@ window.addEventListener('DOMContentLoaded', () => {
 		error: 'Что-то пошло не так...',
 	};
 
-	function postData(form) {
+	const postData = async (url, decsreption) => {
+		const res = await fetch(url, {
+			method: 'POST',
+			body: decsreption,
+			headers: {'content-type': 'application/json'},
+		});
+
+		return await res.json();
+	};
+
+	function bindPostData(form) {
 		form.addEventListener('submit', (event) => {
 			event.preventDefault();
 
@@ -260,13 +257,11 @@ window.addEventListener('DOMContentLoaded', () => {
 			form.parentElement.prepend(requestMessage);
 
 
-			const postData = new FormData(form);
+			const data = new FormData(form);
+			const jsonData = JSON.stringify(Object.fromEntries(data.entries()));
+
 			// use Fatch Api for connaction with server
-			fetch('server.php', {
-				method: 'POST',
-				body: postData,
-			})
-				.then(data => data.text())
+			postData('http://localhost:3000/requests', jsonData)
 				.then(data => {
 					showFormMessage(message.success, true);
 					console.log(data);
