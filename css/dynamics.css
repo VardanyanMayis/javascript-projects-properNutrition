@@ -34,3 +34,12 @@
     font-size: 24px;
     
 } 
+
+.offer__slider__inner {
+    display: flex;
+    transition: 0.5s all;
+}
+
+.offer__slider-wrapper {
+    overflow: hidden;
+}

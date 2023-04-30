@@ -90,10 +90,10 @@ window.addEventListener('DOMContentLoaded', () => {
 				showDeadline(endtime);
 			}
 		}
+	}
 
-		function setZero(num) {
-			return (num < 10) ? `0${num}` : num;
-		}
+	function setZero(num) {
+		return (num < 10) ? `0${num}` : num;
 	}
 
 	function showDeadline(time) {
@@ -301,5 +301,57 @@ window.addEventListener('DOMContentLoaded', () => {
 			closeModalWindow();
 			form.classList.remove('hidden');
 		}, 3000);
+	}
+
+	// Slayder
+	const slayderOffers = document.querySelectorAll('.offer__slide');
+	const totalSlaidElement = document.querySelector('#total');
+	const currectSlaidNumber = document.querySelector('#current');
+	const prevSlaydBtn = document.querySelector('.offer__slider-prev');
+	const nextSlaydBtn = document.querySelector('.offer__slider-next');
+
+	const slaidWrraper = document.querySelector('.offer__slider-wrapper');
+	const slaidFiled = document.querySelector('.offer__slider__inner');
+	const width = window.getComputedStyle(slaidWrraper).width;
+
+	slaidFiled.style.width = 100 * slayderOffers.length + '%';
+	slayderOffers.forEach(slayd => {
+		slayd.style.width = width;
+	});
+
+	let slidIndex = 1;
+	let slideOffset = 0;
+
+	setCurrect();
+	totalSlaidElement.textContent = setZero(slayderOffers.length);
+
+	nextSlaydBtn.addEventListener('click', (event) => {
+		event.preventDefault();
+		if(slideOffset === parseInt(width) * (slayderOffers.length - 1)) {
+			slidIndex = 1;
+			slideOffset = 0;
+		} else {
+			slidIndex++;
+			slideOffset += parseInt(width);
+		}
+		setCurrect();
+		slaidFiled.style.transform = `translateX(-${slideOffset}px)`;
+	});
+
+	prevSlaydBtn.addEventListener('click', (event) => {
+		event.preventDefault();
+		if(slideOffset == 0) {
+			slidIndex = slayderOffers.length;
+			slideOffset = parseInt(width) * (slayderOffers.length - 1);
+		} else {
+			slidIndex--;
+			slideOffset -= parseInt(width);
+		}
+		setCurrect();
+		slaidFiled.style.transform = `translateX(-${slideOffset}px)`;
+	});
+
+	function setCurrect() {
+		currectSlaidNumber.textContent = setZero(slidIndex);
 	}
 });
