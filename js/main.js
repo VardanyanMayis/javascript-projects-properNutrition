@@ -327,6 +327,7 @@ window.addEventListener('DOMContentLoaded', () => {
 
 	nextSlaydBtn.addEventListener('click', (event) => {
 		event.preventDefault();
+		delateSelectedDot();
 		if(slideOffset === parseInt(width) * (slayderOffers.length - 1)) {
 			slidIndex = 1;
 			slideOffset = 0;
@@ -336,10 +337,13 @@ window.addEventListener('DOMContentLoaded', () => {
 		}
 		setCurrect();
 		slaidFiled.style.transform = `translateX(-${slideOffset}px)`;
+
+		addSelectingDot();
 	});
 
 	prevSlaydBtn.addEventListener('click', (event) => {
 		event.preventDefault();
+		delateSelectedDot();
 		if(slideOffset == 0) {
 			slidIndex = slayderOffers.length;
 			slideOffset = parseInt(width) * (slayderOffers.length - 1);
@@ -349,9 +353,46 @@ window.addEventListener('DOMContentLoaded', () => {
 		}
 		setCurrect();
 		slaidFiled.style.transform = `translateX(-${slideOffset}px)`;
+
+		addSelectingDot();
 	});
 
 	function setCurrect() {
 		currectSlaidNumber.textContent = setZero(slidIndex);
 	}
+
+	// dot buttons for slayder
+	const dotsBlock = document.querySelector('.dots__block');
+	for(let i = 0; i < slayderOffers.length; i++){
+		const dotItem = document.createElement('div');
+		dotItem.dataset.dot = i;
+		dotItem.classList.add('dot__item');
+		if(i === slidIndex - 1) {
+			dotItem.classList.add('secected');
+		}
+		dotsBlock.append(dotItem);
+		dotItem.addEventListener('click', moveToDoteIndex);
+	}
+	
+	const dotItems = dotsBlock.querySelectorAll('div');
+	function moveToDoteIndex(event) {
+		console.log('click');
+		let index = +event.target.dataset.dot;
+		delateSelectedDot();
+		slidIndex = index + 1;
+		setCurrect();
+		event.target.classList.add('secected');
+		slaidFiled.style.transform = `translateX(-${index * parseInt(width)}px)`;
+		console.log(index);
+	}
+
+	function delateSelectedDot() {
+		console.log(dotItems);
+		dotItems[slidIndex - 1].classList.remove('secected');
+	}
+
+	function addSelectingDot() {
+		dotItems[slidIndex - 1].classList.add('secected');
+	}
+
 });
