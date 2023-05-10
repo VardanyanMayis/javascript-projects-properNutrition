@@ -304,101 +304,75 @@ window.addEventListener('DOMContentLoaded', () => {
 	}
 
 	// Slayder
-	const slayderOffers = document.querySelectorAll('.offer__slide');
-	const totalSlaidElement = document.querySelector('#total');
-	const currectSlaidNumber = document.querySelector('#current');
-	const prevSlaydBtn = document.querySelector('.offer__slider-prev');
-	const nextSlaydBtn = document.querySelector('.offer__slider-next');
-
-	const slaidWrraper = document.querySelector('.offer__slider-wrapper');
-	const slaidFiled = document.querySelector('.offer__slider__inner');
-	const width = window.getComputedStyle(slaidWrraper).width;
-
-	slaidFiled.style.width = 100 * slayderOffers.length + '%';
-	slayderOffers.forEach(slayd => {
-		slayd.style.width = width;
-	});
-
-	let slidIndex = 1;
-	let slideOffset = 0;
-
-	setCurrect();
-	totalSlaidElement.textContent = setZero(slayderOffers.length);
-
-	nextSlaydBtn.addEventListener('click', (event) => {
-		event.preventDefault();
-		delateSelectedDot();
-		if(slideOffset === parseInt(width) * (slayderOffers.length - 1)) {
-			slidIndex = 1;
-			slideOffset = 0;
-		} else {
-			slidIndex++;
-			slideOffset += parseInt(width);
-		}
-		setCurrect();
-		slaidFiled.style.transform = `translateX(-${slideOffset}px)`;
-
-		addSelectingDot();
-	});
-
-	prevSlaydBtn.addEventListener('click', (event) => {
-		event.preventDefault();
-		delateSelectedDot();
-		if(slideOffset == 0) {
-			slidIndex = slayderOffers.length;
-			slideOffset = parseInt(width) * (slayderOffers.length - 1);
-		} else {
-			slidIndex--;
-			slideOffset -= parseInt(width);
-		}
-		setCurrect();
-		slaidFiled.style.transform = `translateX(-${slideOffset}px)`;
-
-		addSelectingDot();
-	});
-
-	function setCurrect() {
-		if(slidIndex > slayderOffers.length) {
-			slidIndex = 1;
-		}
-		if(slidIndex == 0) {
-			slidIndex = slayderOffers.length;
-		}
-		slideOffset = parseInt(width) * slidIndex;
-		currectSlaidNumber.textContent = setZero(slidIndex);
-	}
-
-	// dot buttons for slayder
+	const nextSliderBtn = document.querySelector('.offer__slider-next');
+	const prevSliderBtn = document.querySelector('.offer__slider-prev');
+	const innerBlock = document.querySelector('.offer__slider__inner');
+	const slidersOffset = document.querySelectorAll('.offer__slide');
+	const slidersLength = slidersOffset.length;
+	const currectNumber = document.querySelector('#current');
+	const wrapper = document.querySelector('.offer__slider-wrapper');
 	const dotsBlock = document.querySelector('.dots__block');
-	for(let i = 0; i < slayderOffers.length; i++){
-		const dotItem = document.createElement('div');
-		dotItem.dataset.dot = i;
-		dotItem.classList.add('dot__item');
-		if(i === slidIndex - 1) {
-			dotItem.classList.add('secected');
+	const width = window.getComputedStyle(wrapper).width;
+	let sliderIndex = 0;
+
+	// set start values for counter
+	currectNumber.textContent = setZero(sliderIndex + 1);
+	document.querySelector('#total').textContent = setZero(slidersLength);
+	dotsBlock.style.width = width;
+
+	slidersOffset.forEach((item, index) => {
+		item.style.minWidth = width;
+
+		const dot = document.createElement('div');
+		dot.classList.add('dot__btn');
+		if(index == sliderIndex) {
+			dot.classList.add('secected');
 		}
-		dotsBlock.append(dotItem);
-		dotItem.addEventListener('click', moveToDoteIndex);
-	}
-	
-	const dotItems = dotsBlock.querySelectorAll('div');
-	function moveToDoteIndex(event) {
-		let index = +event.target.dataset.dot;
-		delateSelectedDot();
-		slidIndex = index + 1;
-		setCurrect();
-		event.target.classList.add('secected');
-		slaidFiled.style.transform = `translateX(-${index * parseInt(width)}px)`;
+		dotsBlock.append(dot);
+	});
+
+	const dots = dotsBlock.querySelectorAll('.dot__btn');
+	dots.forEach((item, index) => {
+		item.addEventListener('click', event => {
+			event.preventDefault();
+			showCurrectSlide(index);
+		});
+	});
+
+	nextSliderBtn.addEventListener('click', (event) => {
+		event.preventDefault();
+		showCurrectSlide(sliderIndex + 1);
+	});
+
+	prevSliderBtn.addEventListener('click', (event) => {
+		event.preventDefault();
+		showCurrectSlide(sliderIndex - 1);
+	});
+
+	function showCurrectSlide(index) {
+		if(index >= slidersLength) {
+			sliderIndex = 0;
+			innerBlock.style.transform = `translateX(-${0}px)`;
+		} else if(index < 0) {
+			sliderIndex = slidersLength - 1;
+			innerBlock.style.transform = `translateX(-${parseInt(width) * (sliderIndex)}px)`;
+		} else {
+			sliderIndex = index;
+			innerBlock.style.transform = `translateX(-${parseInt(width) * index}px)`;
+		}
+		currectNumber.textContent = setZero(sliderIndex + 1);
+		chanjeActiveDot();
 	}
 
-	function delateSelectedDot() {
-		dotItems?.[slidIndex - 1].classList.remove('secected');
+	function chanjeActiveDot() {
+		dots.forEach((item, index) => {
+			if(index == sliderIndex) {
+				item.classList.add('secected');
+			} else {
+				item.classList.remove('secected');
+			}
+		}); 
 	}
-
-	function addSelectingDot() {
-		dotItems?.[slidIndex - 1].classList.add('secected');
-	}
-
 	// End Slayder
 
 	// KKal Calc
